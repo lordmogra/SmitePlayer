@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="SmitePlayer" default="all">
+  
+  
+  <property file="SmitePlayer.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="128m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.zip"/>
+    <include name="*.war"/>
+    <include name="*.egg"/>
+    <include name="*.ear"/>
+    <include name="*.swc"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <include name="**/?*.properties"/>
+    <include name="**/?*.xml"/>
+    <include name="**/?*.gif"/>
+    <include name="**/?*.png"/>
+    <include name="**/?*.jpeg"/>
+    <include name="**/?*.jpg"/>
+    <include name="**/?*.html"/>
+    <include name="**/?*.dtd"/>
+    <include name="**/?*.tld"/>
+    <include name="**/?*.ftl"/>
+  </patternset>
+  
+  
+  <!-- Project Libraries -->
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module SmitePlayer -->
+  
+  <dirname property="module.SmitePlayer.basedir" file="${ant.file}"/>
+  
+  
+  
+  <property name="compiler.args.SmitePlayer" value="${compiler.args}"/>
+  
+  <property name="SmitePlayer.output.dir" value="${module.SmitePlayer.basedir}/out/production/SmitePlayer"/>
+  <property name="SmitePlayer.testoutput.dir" value="${module.SmitePlayer.basedir}/out/test/SmitePlayer"/>
+  
+  <path id="SmitePlayer.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="SmitePlayer.module.production.classpath"/>
+  
+  <path id="SmitePlayer.runtime.production.module.classpath">
+    <pathelement location="${SmitePlayer.output.dir}"/>
+  </path>
+  
+  <path id="SmitePlayer.module.classpath">
+    <pathelement location="${SmitePlayer.output.dir}"/>
+  </path>
+  
+  <path id="SmitePlayer.runtime.module.classpath">
+    <pathelement location="${SmitePlayer.testoutput.dir}"/>
+    <pathelement location="${SmitePlayer.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.SmitePlayer">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.SmitePlayer">
+    <patternset refid="excluded.from.module.SmitePlayer"/>
+  </patternset>
+  
+  <path id="SmitePlayer.module.sourcepath">
+    <dirset dir="${module.SmitePlayer.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.SmitePlayer" depends="compile.module.SmitePlayer.production,compile.module.SmitePlayer.tests" description="Compile module SmitePlayer"/>
+  
+  <target name="compile.module.SmitePlayer.production" description="Compile module SmitePlayer; production classes">
+    <mkdir dir="${SmitePlayer.output.dir}"/>
+    <javac destdir="${SmitePlayer.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true">
+      <compilerarg line="${compiler.args.SmitePlayer}"/>
+      <bootclasspath refid="SmitePlayer.module.bootclasspath"/>
+      <classpath refid="SmitePlayer.module.production.classpath"/>
+      <src refid="SmitePlayer.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.SmitePlayer"/>
+    </javac>
+    
+    <copy todir="${SmitePlayer.output.dir}">
+      <fileset dir="${module.SmitePlayer.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.SmitePlayer.tests" depends="compile.module.SmitePlayer.production" description="compile module SmitePlayer; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.SmitePlayer" description="cleanup module">
+    <delete dir="${SmitePlayer.output.dir}"/>
+    <delete dir="${SmitePlayer.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.SmitePlayer" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.SmitePlayer" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
+</project>
