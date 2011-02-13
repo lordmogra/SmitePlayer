@@ -1,5 +1,10 @@
 name: SmitePlayer
-
-main: LordMogra.SmitePlayer
-
+main: org.bukkit.LordMogra.SmitePlayer
 version: 0.1
+commands:
+    smite:
+        description: Smite target player!
+        usage: /<command> [player]
+    hurt:
+        description: Hurt traget player for X hearts, default 2.
+        usage: /<command> [player] {damage, default=2}
