@@ -1,5 +1,7 @@
 name: SmitePlayer
-main: org.bukkit.LordMogra.SmitePlayer
+main: org.bukkit.awesomepants.SmitePlayer
+author: LordMogra
+website: http://bukkitfun.tumblr.com/ 
 version: 0.1
 commands:
     smite:

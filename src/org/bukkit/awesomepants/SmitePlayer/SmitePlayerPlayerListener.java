@@ -1,4 +1,4 @@
-package org.bukkit.LordMogra.SmitePlayer;
+package org.bukkit.awesomepants.SmitePlayer;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
