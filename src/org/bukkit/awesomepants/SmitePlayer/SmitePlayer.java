@@ -1,13 +1,24 @@
 package org.bukkit.awesomepants.SmitePlayer;
 
+// Java imports
+import java.io.File;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+// org.bukkit imports
 import org.bukkit.entity.Player;
-import org.bukkit.Server;
-import org.bukkit.event.Event.Priority;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
+import org.bukkit.event.Event.Priority;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.Server;
 
 /**
  * SmitePlayer for Bukkit
@@ -46,6 +57,7 @@ public class SmitePlayer extends JavaPlugin {
         // NOTE: All registered events are automatically unregistered when a plugin is disabled
 
         // EXAMPLE: Custom code, here we just output some info so we can check all is well
+        PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is disabled!" );
     }
 
@@ -69,36 +81,33 @@ public class SmitePlayer extends JavaPlugin {
         //first make sure sender is a player, so far, console won't be allowed to smite
         //then check if sender has permissions
         if (sender instanceof Player &&
-            this.hasPermissions((Player) sender))
+            this.hasPermission((Player) sender))
         {
             //probably not necessary, but for the sake of cleanliness, we will sanitize our input.
             String commandString = command.getName().toLowerCase();
 
             //pick the function to run based on the command used.
-            switch(commandString)
+            if (commandString == "smite" )
             {
-                case "smite":
-                    return this.killTargetPlayer(this.getServer().getPlayer(args[1]));
-                    break;
-                case "hurt":
-                    return this.hurtTargetPlayer(this.getServer().getPlayer(args[1]), Integer.parseInt(args[2]));
-                    break;
-                case "smiteall":
-                    for (Player player: getServer().getOnlinePlayers())
+                return this.killTargetPlayer(this.getServer().getPlayer(args[1]));
+            }
+            else if (commandString == "hurt")
+            {
+                return this.hurtTargetPlayer(this.getServer().getPlayer(args[1]), Integer.parseInt(args[2]));
+            }
+            else if (commandString == "smiteall")
+            {
+                for (Player player: getServer().getOnlinePlayers())
+                {
+                    if (player.getName() != ((Player)sender).getName())
                     {
-                        if (player.getName() != sender.getName())
-                        {
-                            this.killTargetPlayer(player);
-                        }
+                        this.killTargetPlayer(player);
                     }
-                    break;
+                }
             }
         }
-        else
-        {
-            return false;
-        }
-        
+        //else
+        return false;
     }
 
 
@@ -106,7 +115,7 @@ public class SmitePlayer extends JavaPlugin {
     {
         if (targetPlayer != null)
         {
-            targetPlayer.setHealth(targetPlayer.getHealth - amount);
+            targetPlayer.setHealth(targetPlayer.getHealth() - amount);
             return true;
         }
         else
