@@ -51,6 +51,7 @@
     <include name="**/?*.dtd"/>
     <include name="**/?*.tld"/>
     <include name="**/?*.ftl"/>
+    <include name="**/?*.yml"/>
   </patternset>
   
   
@@ -67,8 +68,8 @@
   
   <property name="compiler.args.SmitePlayer" value="${compiler.args}"/>
   
-  <property name="SmitePlayer.output.dir" value="${module.SmitePlayer.basedir}/out/production/SmitePlayer"/>
-  <property name="SmitePlayer.testoutput.dir" value="${module.SmitePlayer.basedir}/out/test/SmitePlayer"/>
+  <property name="SmitePlayer.output.dir" value="${module.SmitePlayer.basedir}/out/production/"/>
+  <property name="SmitePlayer.testoutput.dir" value="${module.SmitePlayer.basedir}/out/test/"/>
   
   <path id="SmitePlayer.module.bootclasspath">
     <!-- Paths to be included in compilation bootclasspath -->
@@ -130,10 +131,18 @@
   <target name="clean.module.SmitePlayer" description="cleanup module">
     <delete dir="${SmitePlayer.output.dir}"/>
     <delete dir="${SmitePlayer.testoutput.dir}"/>
+    <delete dir="${module.SmitePlayer.basedir}/lib"/>
   </target>
   
   <target name="init" description="Build initialization">
     <!-- Perform any build initialization in this target -->
+  </target>
+
+  <target name="dist" depends="build.modules"
+        description="generate the distribution" >
+    <mkdir dir="${module.SmitePlayer.basedir}/lib"/>
+
+    <jar jarfile="${module.SmitePlayer.basedir}/lib/SmitePlayer.jar" basedir="${SmitePlayer.output.dir}"/>
   </target>
   
   <target name="clean" depends="clean.module.SmitePlayer" description="cleanup all"/>
