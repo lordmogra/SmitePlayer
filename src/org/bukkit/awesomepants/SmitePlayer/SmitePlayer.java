@@ -30,6 +30,7 @@ public class SmitePlayer extends JavaPlugin {
     private final SmitePlayerBlockListener blockListener = new SmitePlayerBlockListener(this);
     private final HashMap<Player, Boolean> debugees = new HashMap<Player, Boolean>();
     public static final Logger log = Logger.getLogger("Minecraft"); // Get the Minecraft logger for, er, logging purposes.
+    public static final pdfFile = this.getDescription();
 
     public SmitePlayer(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
         super(pluginLoader, instance, desc, folder, plugin, cLoader);
@@ -47,7 +48,6 @@ public class SmitePlayer extends JavaPlugin {
        
 
         // EXAMPLE: Custom code, here we just output some info so we can check all is well
-        PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
     }
 
@@ -57,7 +57,6 @@ public class SmitePlayer extends JavaPlugin {
         // NOTE: All registered events are automatically unregistered when a plugin is disabled
 
         // EXAMPLE: Custom code, here we just output some info so we can check all is well
-        PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is disabled!" );
     }
 
@@ -89,7 +88,13 @@ public class SmitePlayer extends JavaPlugin {
             //pick the function to run based on the command used.
             if (commandString == "smite" )
             {
-                return this.killTargetPlayer(this.getServer().getPlayer(args[1]));
+                boolean smited = this.killTargetPlayer(this.getServer().getPlayer(args[1]));
+                if (smited)
+                {
+                    String message = String.format("%s has been smited by the almighty Zom!", args[1]);
+                    getServer().broadcastMessage(message);
+                }
+                return smited;
             }
             else if (commandString == "hurt")
             {
@@ -120,6 +125,7 @@ public class SmitePlayer extends JavaPlugin {
         }
         else
         {
+            log.error("In method 'hurtTargetPlayer', argument 'targetPlayer' cannot be null.");
             return false;
         }
 
@@ -133,6 +139,7 @@ public class SmitePlayer extends JavaPlugin {
         }
         else
         {
+            log.error("In method 'killTargetPlayer', argument 'targetPlayer' cannot be null.");
             return false; 
         }
     }
@@ -140,7 +147,13 @@ public class SmitePlayer extends JavaPlugin {
     private boolean hasPermission(Player player)
     {
         //TODO: This'll become more complicated later.
-        return player.isOp();
+        boolean allowed = player.isOp();
+        String logMsg = String.format("%s %s allowed to use %s.",
+                                        player.getName(),
+                                        (allowed) ? "is" : "is not",
+                                        pdfFile.getName());
+        log.info(logMsg);
+        return allowed;
     }
 }
 
