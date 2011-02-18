@@ -86,7 +86,7 @@ public class SmitePlayer extends JavaPlugin {
             log.info(String.format("Command sent is '%s' by %s", commandString, userName));
 
             //pick the function to run based on the command used.
-            if (commandString == "smite" )
+            if (commandString.equals( "smite"))
             {
                 //validate args, first argument should be <player> and not an empty string.
                 String targetName = "";
@@ -106,12 +106,12 @@ public class SmitePlayer extends JavaPlugin {
                 boolean smited = this.killTarget(this.getServer().getPlayer(targetName));
                 if (smited)
                 {
-                    String message = String.format("%s has been smited by the almighty Zom!", args[1]);
+                    String message = String.format("%s has been smited by the almighty Zom!", targetName);
                     getServer().broadcastMessage(message);
                 }
                 return smited;
             }
-            else if (commandString == "hurt")
+            else if (commandString.equals("hurt"))
             {
                 //validate args, first argument should be <player> and not an empty string.
                 String targetName = "";
@@ -144,12 +144,12 @@ public class SmitePlayer extends JavaPlugin {
                 boolean wasHurt = this.hurtTarget(getServer().getPlayer(targetName), amount);
                 if (wasHurt)
                 {
-                    String message = String.format("Zom does not find favor with %s and has cursed them!", args[1]);
+                    String message = String.format("Zom does not find favor with %s and has cursed them!", targetName);
                     getServer().broadcastMessage(message);
                 }
                 return wasHurt;
             }
-            else if (commandString == "smiteall")
+            else if (commandString.equals("smiteall"))
             {
                 log.info(String.format("%s is targeting everyone but themself with '%s'", userName, commandString)); 
                 for (Player player: getServer().getOnlinePlayers())
