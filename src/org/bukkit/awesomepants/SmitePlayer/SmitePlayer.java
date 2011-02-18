@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 // org.bukkit imports
 import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
@@ -26,11 +27,9 @@ import org.bukkit.Server;
  * @author LordMogra
  */
 public class SmitePlayer extends JavaPlugin {
-    private final SmitePlayerPlayerListener playerListener = new SmitePlayerPlayerListener(this);
-    private final SmitePlayerBlockListener blockListener = new SmitePlayerBlockListener(this);
     private final HashMap<Player, Boolean> debugees = new HashMap<Player, Boolean>();
+    public final PluginDescriptionFile pdfFile = this.getDescription();
     public static final Logger log = Logger.getLogger("Minecraft"); // Get the Minecraft logger for, er, logging purposes.
-    public static final pdfFile = this.getDescription();
 
     public SmitePlayer(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader) {
         super(pluginLoader, instance, desc, folder, plugin, cLoader);
@@ -47,8 +46,7 @@ public class SmitePlayer extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
        
 
-        // EXAMPLE: Custom code, here we just output some info so we can check all is well
-        System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
+        log.info(String.format("%s version %s is enabled!", pdfFile.getName(), pdfFile.getVersion()));
     }
 
     public void onDisable() {
@@ -56,8 +54,7 @@ public class SmitePlayer extends JavaPlugin {
 
         // NOTE: All registered events are automatically unregistered when a plugin is disabled
 
-        // EXAMPLE: Custom code, here we just output some info so we can check all is well
-        System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is disabled!" );
+        log.info(String.format("%s version %s is disabled!", pdfFile.getName(), pdfFile.getVersion()));
     }
 
 
@@ -84,11 +81,29 @@ public class SmitePlayer extends JavaPlugin {
         {
             //probably not necessary, but for the sake of cleanliness, we will sanitize our input.
             String commandString = command.getName().toLowerCase();
+            String userName = ((Player)sender).getName();
+
+            log.info(String.format("Command sent is '%s' by %s", commandString, userName));
 
             //pick the function to run based on the command used.
             if (commandString == "smite" )
             {
-                boolean smited = this.killTargetPlayer(this.getServer().getPlayer(args[1]));
+                //validate args, first argument should be <player> and not an empty string.
+                String targetName = "";
+
+                if (args.length > 0)
+                {
+                    targetName = args[0];
+                }
+
+                if (targetName == "")
+                {
+                    return false;
+                }
+
+                log.info(String.format("%s is targeting %s with '%s'", userName, targetName, commandString)); 
+
+                boolean smited = this.killTarget(this.getServer().getPlayer(targetName));
                 if (smited)
                 {
                     String message = String.format("%s has been smited by the almighty Zom!", args[1]);
@@ -98,48 +113,87 @@ public class SmitePlayer extends JavaPlugin {
             }
             else if (commandString == "hurt")
             {
-                return this.hurtTargetPlayer(this.getServer().getPlayer(args[1]), Integer.parseInt(args[2]));
+                //validate args, first argument should be <player> and not an empty string.
+                String targetName = "";
+
+                if (args.length > 0)
+                {
+                    targetName = args[0];
+                }
+
+                if (targetName == "")
+                {
+                    return false;
+                }
+
+                //second argument should be amount of damage and defaults to 2.
+                int amount = 2;
+
+                if (args.length > 1)
+                {
+                    amount = Integer.parseInt(args[1]);
+                }
+
+                if (amount < 1)
+                {
+                    sender.sendMessage("[amount] should be more than 0!");
+                }
+
+                log.info(String.format("%s is targeting %s with '%s' for %d", userName, targetName, commandString, amount)); 
+
+                boolean wasHurt = this.hurtTarget(getServer().getPlayer(targetName), amount);
+                if (wasHurt)
+                {
+                    String message = String.format("Zom does not find favor with %s and has cursed them!", args[1]);
+                    getServer().broadcastMessage(message);
+                }
+                return wasHurt;
             }
             else if (commandString == "smiteall")
             {
+                log.info(String.format("%s is targeting everyone but themself with '%s'", userName, commandString)); 
                 for (Player player: getServer().getOnlinePlayers())
                 {
-                    if (player.getName() != ((Player)sender).getName())
+                    if (player.getName() != userName)
                     {
-                        this.killTargetPlayer(player);
+                        this.killTarget(player);
                     }
                 }
+                String message = String.format("Zom is angry at the heathens! All but %s have felt his wrath.", userName);
+                getServer().broadcastMessage(message);
+                return true;
             }
         }
         //else
+        log.warning(String.format("Nothing happened for some reason, command was %s, args were %s", command.getName(), args));
         return false;
     }
 
 
-    private boolean hurtTargetPlayer(Player targetPlayer, int amount)
+    private boolean hurtTarget(LivingEntity target, int amount)
     {
-        if (targetPlayer != null)
+        if (target != null)
         {
-            targetPlayer.setHealth(targetPlayer.getHealth() - amount);
+            target.setHealth(target.getHealth() - amount);
             return true;
         }
         else
         {
-            log.error("In method 'hurtTargetPlayer', argument 'targetPlayer' cannot be null.");
+            log.warning("In method 'hurtTarget', argument 'target' cannot be null.");
             return false;
         }
 
     }
 
-    private boolean killTargetPlayer(Player targetPlayer)
+    private boolean killTarget(LivingEntity target)
     {
-        if (targetPlayer != null)
+        if (target != null)
         {
-            return this.hurtTargetPlayer(targetPlayer, targetPlayer.getHealth());
+            return this.hurtTarget(target, target.getHealth());
         }
         else
         {
-            log.error("In method 'killTargetPlayer', argument 'targetPlayer' cannot be null.");
+            log.warning("In method 'killTarget', argument 'target' cannot be null.");
             return false; 
         }
     }
