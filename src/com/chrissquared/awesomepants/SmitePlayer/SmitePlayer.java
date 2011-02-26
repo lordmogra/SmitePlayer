@@ -1,4 +1,4 @@
-package org.bukkit.awesomepants.SmitePlayer;
+package com.chrissquared.awesomepants.SmitePlayer;
 
 // Java imports
 import java.io.File;
